@@ -72,10 +72,10 @@ const HomePage = () => {
     >
       <Card className="flex flex-col items-center justify-center gap-10 md:gap-16  md:max-w-2xl py-4 px-3 md:mx-auto md:px-6 md:py-8 bg-slate-100 bg-opacity-50 backdrop-blur-sm">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-center text-gray-900">
+          <h1 className="text-xl md:text-3xl font-bold text-center text-gray-900">
             Weather App
           </h1>
-          <p className="text-center text-sm md:text-base text-gray-600">
+          <p className="text-center text-xs md:text-base text-gray-600">
             This is a weather app built by{" "}
             <span className="text-sky-400 font-extrabold">SBN </span>
           </p>
@@ -83,7 +83,7 @@ const HomePage = () => {
 
         <form
           onSubmit={handleSubmit}
-          className="flex w-3/4  md:mx-auto items-center space-x-2"
+          className="flex w-3/4  md:mx-auto items-center md:space-x-2 space-x-1"
         >
           <Input
             type="text"
@@ -92,7 +92,9 @@ const HomePage = () => {
             onChange={(e) => setSearch(e.target.value)}
             className=""
           />
-          <Button type="submit">Search</Button>
+          <Button size={"sm"} type="submit">
+            Search
+          </Button>
         </form>
         {isLoading ? (
           <Loader className="w-8 h-8 animate-spin " />
@@ -121,7 +123,7 @@ const HomePage = () => {
               {description.includes("mist") && (
                 <CloudFogIcon className="text-gray-600 w-8 h-8" />
               )}
-              <div className="flex justify-between w-full gap-5 text-sm md:text-base">
+              <div className="flex justify-between w-full gap-5 text-xs md:text-base">
                 <div className="text-gray-600">
                   Humidity:{" "}
                   <span className="text-gray-900 font-bold">{humidity}%</span>
@@ -131,7 +133,7 @@ const HomePage = () => {
                   <span className="text-gray-900 font-bold">{wind} km/h</span>
                 </div>
               </div>
-              <div className="flex justify-between w-full gap-5 text-sm md:text-base">
+              <div className="flex justify-between w-full gap-5 text-xs md:text-base">
                 <div className="">
                   <span className="text-gray-600">Min Temp:</span>
                   <span className="text-gray-900 font-bold">{minTemp}°C</span>
