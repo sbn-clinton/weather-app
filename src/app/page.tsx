@@ -1,101 +1,152 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import axios from "axios";
+import {
+  CloudFogIcon,
+  CloudIcon,
+  CloudRainIcon,
+  CloudSnowIcon,
+  Loader,
+  SunIcon,
+} from "lucide-react";
+import { useState } from "react";
+
+const HomePage = () => {
+  const [search, setSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [city, setCity] = useState("");
+  const [temp, setTemp] = useState("");
+  const [maxTemp, setMaxTemp] = useState("");
+  const [minTemp, setMinTemp] = useState("");
+  const [description, setDescription] = useState("");
+  const [humidity, setHumidity] = useState("");
+  const [wind, setWind] = useState("");
+
+  const options = {
+    method: "GET",
+    url: `https://open-weather13.p.rapidapi.com/city/${search}/EN`,
+    headers: {
+      "x-rapidapi-key": process.env.NEXT_PUBLIC_API_KEY,
+      "x-rapidapi-host": process.env.NEXT_PUBLIC_API_URL,
+    },
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      setIsLoading(true);
+      const response = await axios.request(options);
+      console.log(response.data);
+      setCity(response.data.name);
+      setTemp(response.data.main.temp);
+      setMaxTemp(response.data.main.temp_max);
+      setMinTemp(response.data.main.temp_min);
+      setDescription(response.data.weather[0].description);
+      setHumidity(response.data.main.humidity);
+      setWind(response.data.wind.speed);
+      setSearch("");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div
+      className={`py-8 px-6 ${
+        description.includes("clear")
+          ? "bg-[url('/assets/sun.png')]"
+          : description.includes("rain")
+          ? "bg-[url('/assets/rain.png')]"
+          : description.includes("snow")
+          ? "bg-[url('/assets/snow.png')]"
+          : description.includes("mist")
+          ? "bg-[url('/assets/mist.png')]"
+          : description.includes("clouds")
+          ? "bg-[url('/assets/cloud.png')]"
+          : ""
+      } bg-no-repeat bg-cover bg-center min-h-screen content-center `}
+    >
+      <Card className="flex flex-col items-center justify-center gap-10 md:gap-16  md:max-w-2xl py-4 px-3 md:mx-auto md:px-6 md:py-8 bg-slate-100 bg-opacity-50 backdrop-blur-sm">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-center text-gray-900">
+            Weather App
+          </h1>
+          <p className="text-center text-sm md:text-base text-gray-600">
+            This is a weather app built by{" "}
+            <span className="text-sky-400 font-extrabold">SBN </span>
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+
+        <form
+          onSubmit={handleSubmit}
+          className="flex w-3/4  md:mx-auto items-center space-x-2"
         >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+          <Input
+            type="text"
+            placeholder="Search city"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className=""
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <Button type="submit">Search</Button>
+        </form>
+        {isLoading ? (
+          <Loader className="w-8 h-8 animate-spin " />
+        ) : (
+          <Card className="flex flex-col items-center gap-5 md:gap-10 w-full md:w-3/4 md:mx-auto px-2 md:px-6 py-4 md:py-6  bg-slate-50 bg-opacity-5 backdrop-blur-0">
+            <div className="flex items-center justify-center w-full">
+              <h1 className="text-lg md:text-2xl font-extrabold text-center  text-gray-900 ">
+                {city}
+              </h1>
+            </div>
+            <div className="flex flex-col items-center gap-3">
+              <div className="text-4xl font-bold text-gray-900">{temp}°C</div>
+              <div className="text-gray-600">{description}</div>
+              {description.includes("rain") && (
+                <CloudRainIcon className="text-gray-600 w-8 h-8" />
+              )}
+              {description.includes("snow") && (
+                <CloudSnowIcon className="text-gray-600 w-8 h-8" />
+              )}
+              {description.includes("clear") && (
+                <SunIcon className="text-gray-600 w-8 h-8" />
+              )}
+              {description.includes("clouds") && (
+                <CloudIcon className="text-gray-600 w-8 h-8" />
+              )}
+              {description.includes("mist") && (
+                <CloudFogIcon className="text-gray-600 w-8 h-8" />
+              )}
+              <div className="flex justify-between w-full gap-5 text-sm md:text-base">
+                <div className="text-gray-600">
+                  Humidity:{" "}
+                  <span className="text-gray-900 font-bold">{humidity}%</span>
+                </div>
+                <div className="text-gray-600">
+                  Wind:{" "}
+                  <span className="text-gray-900 font-bold">{wind} km/h</span>
+                </div>
+              </div>
+              <div className="flex justify-between w-full gap-5 text-sm md:text-base">
+                <div className="">
+                  <span className="text-gray-600">Min Temp:</span>
+                  <span className="text-gray-900 font-bold">{minTemp}°C</span>
+                </div>
+                <div className="">
+                  <span className="text-gray-600">Max Temp:</span>
+                  <span className="text-gray-900 font-bold">{maxTemp}°C</span>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+      </Card>
     </div>
   );
-}
+};
+
+export default HomePage;
